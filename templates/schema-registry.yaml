@@ -1,0 +1,34 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: schema-deployment
+spec:
+  replicas: {{ .Values.schemaregistry.replicaCount }}
+  selector:
+    matchLabels:
+      name: schema
+  template:
+    metadata:
+      labels:
+        name: schema
+        app: schema
+    spec:
+      containers:
+      - name: schema
+        resources: {}
+        image: {{ .Values.schemaregistry.image }}
+        ports:
+        - containerPort: {{ .Values.schemaregistry.port }}
+        env:
+        - name: SCHEMA_REGISTRY_HOST_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: SCHEMA_REGISTRY_LISTENERS
+          value: http://0.0.0.0:{{ .Values.schemaregistry.port }}
+        - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
+          value: "PLAINTEXT://kafka-service-ext:{{ .Values.kafka.port }}"
+        - name: SCHEMA_REGISTRY_KAFKASTORE_GROUP_ID
+          value: "schema-registry"
+        - name: SCHEMA_REGISTRY_MASTER_ELIGIBILITY
+          value: "true"

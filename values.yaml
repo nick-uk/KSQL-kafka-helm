@@ -1,0 +1,50 @@
+kafka:
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  replicaCount: 3
+  port: 9094
+  image: "confluentinc/cp-enterprise-kafka:5.3.1"
+
+zookeeper:
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  replicaCount: 1
+  port: 2181
+  image: "confluentinc/cp-zookeeper:5.3.1"
+
+schemaregistry:
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  replicaCount: 1
+  port: 8081
+  image: "confluentinc/cp-schema-registry:5.3.1"
+
+ksqlserver:
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  replicaCount: 1
+  port: 8088
+  image: "confluentinc/cp-ksql-server:5.3.1"
+  service:
+    type: ClusterIP
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - youtksql-server.local

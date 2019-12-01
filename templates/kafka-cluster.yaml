@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+spec:
+  #podManagementPolicy: "Parallel"
+  #podManagementPolicy: "OrderedReady" # default
+  serviceName: kafka-service-headless
+  replicas: {{ .Values.kafka.replicaCount }}
+  selector:
+    matchLabels:
+      app: kafka
+  revisionHistoryLimit: 1
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: kafka
+        resources: {}
+        image: {{ .Values.kafka.image }}
+        ports:
+        - containerPort: {{ .Values.kafka.port }}
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        ###
+        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+          value: LISTENER_A:PLAINTEXT,LISTENER_B:PLAINTEXT,LISTENER_C:PLAINTEXT
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: zoo1:{{ .Values.zookeeper.port }}
+        - name: KAFKA_INTER_BROKER_LISTENER_NAME
+          value: LISTENER_A
+        command:
+        - bash
+        - -c
+        - |
+          export KAFKA_BROKER_ID=${HOSTNAME##*-} && \
+          export KAFKA_LISTENERS=LISTENER_A://${POD_NAME}:{{ .Values.kafka.port }},LISTENER_B://localhost:9092,LISTENER_C://${POD_NAME}:9096 && \
+          POD_HOST=$(grep $HOSTNAME /etc/hosts | awk '{print $2}'| cut -d'.' -f2-) && \
+          BROKER=$(echo "kafka-${KAFKA_BROKER_ID}."${POD_HOST}) ; \
+          export KAFKA_ADVERTISED_LISTENERS=LISTENER_A://${BROKER}:{{ .Values.kafka.port }} ; \
+          export > /tmp/here && \
+          exec /etc/confluent/docker/run

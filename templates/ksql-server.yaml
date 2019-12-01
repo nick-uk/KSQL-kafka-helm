@@ -1,0 +1,32 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: ksql-server
+spec:
+  replicas: {{ .Values.ksqlserver.replicaCount }}
+  selector:
+    matchLabels:
+      app: ksqlserver
+      name: ksqlserver
+  template:
+    metadata:
+      labels:
+        app: ksqlserver
+        name: ksqlserver
+    spec:
+      containers:
+      - name: ksqlserver
+        resources: {}
+        image: {{ .Values.ksqlserver.image }}
+        ports:
+        - containerPort: {{ .Values.ksqlserver.port }}
+        env:
+        - name: KSQL_BOOTSTRAP_SERVERS
+          value: "PLAINTEXT://kafka-service-ext:{{ .Values.kafka.port }}"
+        - name: KSQL_KSQL_SERVICE_ID
+          value: "ksqlserver"
+        - name: KSQL_KSQL_SCHEMA_REGISTRY_URL
+          value: schema-service:{{ .Values.schemaregistry.port }}
+        - name: KSQL_LISTENERS
+          value: http://0.0.0.0:{{ .Values.ksqlserver.port }}
+
