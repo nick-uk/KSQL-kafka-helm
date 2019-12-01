@@ -33,6 +33,7 @@ $ kubectl port-forward $(kubectl get services -l app=ksqlserver -o name) 8088:80
 Forwarding from 127.0.0.1:8088 -> 8088
 Forwarding from [::1]:8088 -> 8088
 ```
+[![asciicast](https://asciinema.org/a/4dB6c75J492eCVQyvV3EUo1Sj.png)](https://asciinema.org/a/4dB6c75J492eCVQyvV3EUo1Sj)
 
 ## WARNING
 This repo is not for production deployments. For production better use a managed service from https://www.confluent.io
