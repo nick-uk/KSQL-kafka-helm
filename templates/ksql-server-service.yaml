@@ -12,3 +12,21 @@ spec:
     protocol: TCP
   selector:
     app: ksqlserver
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ksqlserver-ext
+  labels:
+    app: ksqlserver
+spec:
+  type: NodePort
+  ports:
+  - port: {{ .Values.ksqlserver.port }}
+    name: ksqlserver-port
+    nodePort: 30000
+    targetPort: {{ .Values.ksqlserver.port }}
+    protocol: TCP
+  selector:
+    app: ksqlserver
+

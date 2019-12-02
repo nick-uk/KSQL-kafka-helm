@@ -33,8 +33,6 @@ ksqlserver:
   replicaCount: 1
   port: 8088
   image: "confluentinc/cp-ksql-server:5.3.1"
-  service:
-    type: ClusterIP
 
 ingress:
   enabled: false
